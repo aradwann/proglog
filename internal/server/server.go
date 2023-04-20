@@ -32,12 +32,7 @@ func NewGRPCServer(config *Config) (*grpc.Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	api.RegisterLogService(gsrv, &api.LogService{
-		Produce:       srv.Produce,
-		Consume:       srv.Consume,
-		ConsumeStream: srv.ConsumeStream,
-		ProduceStream: srv.ProduceStream,
-	})
+	api.RegisterLogServer(gsrv, srv)
 	return gsrv, nil
 }
 
