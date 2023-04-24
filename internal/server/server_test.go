@@ -3,14 +3,16 @@ package server
 
 import (
 	"context"
-	"io/ioutil"
 	"net"
+	"os"
 	"testing"
 
 	api "github.com/aradwann/proglog/api/v1"
+	"github.com/aradwann/proglog/internal/config"
 	"github.com/aradwann/proglog/internal/log"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func TestServer(t *testing.T) {
@@ -36,40 +38,56 @@ func TestServer(t *testing.T) {
 // START: setup
 func setupTest(t *testing.T, fn func(*Config)) (
 	client api.LogClient,
-	config *Config,
+	cfg *Config,
 	teardown func(),
 ) {
 	t.Helper()
 
-	l, err := net.Listen("tcp", ":0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
-	clientOptions := []grpc.DialOption{grpc.WithInsecure()}
-	cc, err := grpc.Dial(l.Addr().String(), clientOptions...)
+	clientTLSConfig, err := config.SetupTLSConfig(config.TLSConfig{
+		CAFile: config.CAFile,
+	})
 	require.NoError(t, err)
 
-	dir, err := ioutil.TempDir("", "server-test")
+	clientCreds := credentials.NewTLS(clientTLSConfig)
+
+	cc, err := grpc.Dial(l.Addr().String(), grpc.WithTransportCredentials(clientCreds))
+	require.NoError(t, err)
+
+	client = api.NewLogClient(cc)
+
+	serverTLSConfig, err := config.SetupTLSConfig(config.TLSConfig{
+		CertFile:      config.ServerCertFile,
+		KeyFile:       config.ServerKeyFile,
+		CAFile:        config.CAFile,
+		ServerAddress: l.Addr().String(),
+	})
+	require.NoError(t, err)
+
+	serverCreds := credentials.NewTLS(serverTLSConfig)
+
+	dir, err := os.MkdirTemp("", "server-test")
 	require.NoError(t, err)
 
 	clog, err := log.NewLog(dir, log.Config{})
 	require.NoError(t, err)
 
-	config = &Config{
+	cfg = &Config{
 		CommitLog: clog,
 	}
 	if fn != nil {
-		fn(config)
+		fn(cfg)
 	}
-	server, err := NewGRPCServer(config)
+	server, err := NewGRPCServer(cfg, grpc.Creds(serverCreds))
 	require.NoError(t, err)
 
 	go func() {
 		server.Serve(l)
 	}()
 
-	client = api.NewLogClient(cc)
-
-	return client, config, func() {
+	return client, cfg, func() {
 		server.Stop()
 		cc.Close()
 		l.Close()
