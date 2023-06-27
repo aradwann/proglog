@@ -27,7 +27,7 @@ jobs:
       
     - name: Install dependecies 
       run: |
-        go get github.com/cloudflare/cfssl/cmd/cfssl
+        sudo apt-get install golang-github-cloudflare-cfssl-dev
         make gencert
 
     - name: Test
