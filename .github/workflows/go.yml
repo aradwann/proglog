@@ -27,7 +27,7 @@ jobs:
       
     - name: Install dependecies 
       run: |
-        go install github.com/cloudflare/cfssl/cmd/...@latest
+        go install github.com/cloudflare/cfssl@latest
         make gencert
 
     - name: Test
