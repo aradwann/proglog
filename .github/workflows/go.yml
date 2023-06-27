@@ -25,11 +25,10 @@ jobs:
     - name: make init
       run: make init
       
-    # - name: Build 
-    #   run: go build ./...
-      
-    - name: generate file dependencies
-      run: make gencert
+    - name: Install dependecies 
+      run: |
+        go install github.com/cloudflare/cfssl/cmd/...@latest
+        make gencert
 
     - name: Test
       run: make test
