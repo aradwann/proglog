@@ -24,11 +24,14 @@ jobs:
       
     - name: make init
       run: make init
-      
+    
+    - name: Install cfssl
+      uses: jaxxstorm/action-install-gh-release@v1.10.0
+      with: # Grab the latest version
+        repo: cloudflare/cfssl
+
     - name: Install dependecies 
-      run: |
-        sudo apt-get install golang-github-cloudflare-cfssl-dev
-        make gencert
+      run: make gencert
 
     - name: Test
       run: make test
