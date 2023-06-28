@@ -29,6 +29,7 @@ jobs:
       uses: jaxxstorm/action-install-gh-release@v1.10.0
       with: # Grab the latest version
         repo: cloudflare/cfssl
+        tag: v1.6.4
 
     - name: Install dependecies 
       run: make gencert
