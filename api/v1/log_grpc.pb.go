@@ -125,16 +125,17 @@ func (x *logProduceStreamClient) Recv() (*ProduceResponse, error) {
 }
 
 // LogServer is the server API for Log service.
-// All implementations should embed UnimplementedLogServer
+// All implementations must embed UnimplementedLogServer
 // for forward compatibility
 type LogServer interface {
 	Produce(context.Context, *ProduceRequest) (*ProduceResponse, error)
 	Consume(context.Context, *ConsumeRequest) (*ConsumeResponse, error)
 	ConsumeStream(*ConsumeRequest, Log_ConsumeStreamServer) error
 	ProduceStream(Log_ProduceStreamServer) error
+	mustEmbedUnimplementedLogServer()
 }
 
-// UnimplementedLogServer should be embedded to have forward compatible implementations.
+// UnimplementedLogServer must be embedded to have forward compatible implementations.
 type UnimplementedLogServer struct {
 }
 
@@ -150,6 +151,7 @@ func (UnimplementedLogServer) ConsumeStream(*ConsumeRequest, Log_ConsumeStreamSe
 func (UnimplementedLogServer) ProduceStream(Log_ProduceStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method ProduceStream not implemented")
 }
+func (UnimplementedLogServer) mustEmbedUnimplementedLogServer() {}
 
 // UnsafeLogServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to LogServer will

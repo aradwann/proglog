@@ -37,6 +37,7 @@ const (
 // END: config_authorizer
 
 type grpcServer struct {
+	*api.UnimplementedLogServer
 	*Config
 }
 
