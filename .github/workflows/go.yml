@@ -20,16 +20,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: 1.19
-        cache-dependency-path: ~/.proglog
       
     - name: make init
       run: make init
-    
-    # - name: Install cfssl
-    #   uses: jaxxstorm/action-install-gh-release@v1.10.0
-    #   with: # Grab the latest version
-    #     repo: cloudflare/cfssl
-    #     tag: cfssl_1.6.4_linux_amd64
 
     - name: Install dependecies 
       run: |
