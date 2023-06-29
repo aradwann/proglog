@@ -25,14 +25,17 @@ jobs:
     - name: make init
       run: make init
     
-    - name: Install cfssl
-      uses: jaxxstorm/action-install-gh-release@v1.10.0
-      with: # Grab the latest version
-        repo: cloudflare/cfssl
-        tag: cfssl_1.6.4_linux_amd64
+    # - name: Install cfssl
+    #   uses: jaxxstorm/action-install-gh-release@v1.10.0
+    #   with: # Grab the latest version
+    #     repo: cloudflare/cfssl
+    #     tag: cfssl_1.6.4_linux_amd64
 
     - name: Install dependecies 
-      run: make gencert
+      run: |
+        go install github.com/cloudflare/cfssl/cmd/...@latest
+        make init
+        make gencert
 
     - name: Test
       run: make test
