@@ -33,6 +33,7 @@ jobs:
 
     - name: Install dependecies 
       run: |
+        go version
         go install github.com/cloudflare/cfssl/cmd/...@latest
         make init
         make gencert
