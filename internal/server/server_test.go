@@ -115,7 +115,7 @@ func setupTest(t *testing.T, fn func(*Config)) (
 	clog, err := log.NewLog(dir, log.Config{})
 	require.NoError(t, err)
 
-	authorizer, err := auth.New(config.ACLModelFile, config.ACLPolicy)
+	authorizer, err := auth.New(config.ACLModelFile, config.ACLPolicyFile)
 	require.NoError(t, err)
 
 	// setup and start telemetry exporter to write to two files, each test gets its
