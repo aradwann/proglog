@@ -62,9 +62,6 @@ func setupMember(t *testing.T, members []*Membership) (
 	return members, h
 }
 
-// END: setup
-
-// START: handler
 type handler struct {
 	joins  chan map[string]string
 	leaves chan string
