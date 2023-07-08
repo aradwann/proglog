@@ -12,7 +12,7 @@ import (
 
 	api "github.com/aradwann/proglog/api/v1"
 	"github.com/hashicorp/raft"
-	raftboltdb "github.com/hashicorp/raft-boltdb"
+	raftboltdb "github.com/hashicorp/raft-boltdb/v2"
 	"google.golang.org/protobuf/proto"
 )
 

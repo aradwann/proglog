@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/hashicorp/raft v1.5.0
-	github.com/hashicorp/raft-boltdb v0.0.0-20230125174641-2a8082862702
+	github.com/hashicorp/raft-boltdb/v2 v2.2.2
 	github.com/hashicorp/serf v0.10.1
 	github.com/soheilhy/cmux v0.1.5
 	github.com/stretchr/testify v1.8.2
@@ -36,6 +36,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/miekg/dns v1.1.41 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
+	go.etcd.io/bbolt v1.3.5 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 )
