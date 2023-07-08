@@ -1,4 +1,3 @@
-// START: types
 package server
 
 import (
@@ -22,10 +21,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// START: config_authorizer
 type Config struct {
-	CommitLog  CommitLog
-	Authorizer Authorizer
+	CommitLog   CommitLog
+	Authorizer  Authorizer
+	GetServerer GetServerer
 }
 
 const (
@@ -33,8 +32,6 @@ const (
 	produceAction  = "produce"
 	consumeAction  = "consume"
 )
-
-// END: config_authorizer
 
 type grpcServer struct {
 	*api.UnimplementedLogServer
@@ -94,7 +91,6 @@ func NewGRPCServer(config *Config, grpcOpts ...grpc.ServerOption) (
 
 func (s *grpcServer) Produce(ctx context.Context, req *api.ProduceRequest) (
 	*api.ProduceResponse, error) {
-	// START_HIGHLIGHT
 	if err := s.Authorizer.Authorize(
 		subject(ctx),
 		objectWildcard,
@@ -102,7 +98,6 @@ func (s *grpcServer) Produce(ctx context.Context, req *api.ProduceRequest) (
 	); err != nil {
 		return nil, err
 	}
-	// END_HIGHLIGHT
 	offset, err := s.CommitLog.Append(req.Record)
 	if err != nil {
 		return nil, err
@@ -110,9 +105,6 @@ func (s *grpcServer) Produce(ctx context.Context, req *api.ProduceRequest) (
 	return &api.ProduceResponse{Offset: offset}, nil
 }
 
-// END: produce_authorize
-
-// START: consume_authorize
 func (s *grpcServer) Consume(ctx context.Context, req *api.ConsumeRequest) (
 	*api.ConsumeResponse, error) {
 
@@ -130,7 +122,6 @@ func (s *grpcServer) Consume(ctx context.Context, req *api.ConsumeRequest) (
 	return &api.ConsumeResponse{Record: record}, nil
 }
 
-// START: stream
 func (s *grpcServer) ProduceStream(stream api.Log_ProduceStreamServer) error {
 	for {
 		req, err := stream.Recv()
@@ -172,24 +163,29 @@ func (s *grpcServer) ConsumeStream(
 	}
 }
 
-// END: stream
+func (s *grpcServer) GetServers(ctx context.Context, req *api.GetServersRequest) (*api.GetServersResponse, error) {
+	servers, err := s.GetServerer.GetServers()
+	if err != nil {
+		return nil, err
+	}
+	return &api.GetServersResponse{
+		Servers: servers,
+	}, nil
+}
 
-// START: commitlog
+type GetServerer interface {
+	GetServers() ([]*api.Server, error)
+}
+
 type CommitLog interface {
 	Append(*api.Record) (uint64, error)
 	Read(uint64) (*api.Record, error)
 }
 
-// END: commitlog
-
-// START: authorizer
 type Authorizer interface {
 	Authorize(subject, object, action string) error
 }
 
-// END: authorizer
-
-// START: authenticate
 func authenticate(ctx context.Context) (context.Context, error) {
 	peer, ok := peer.FromContext(ctx)
 	if !ok {
@@ -218,5 +214,3 @@ func subject(ctx context.Context) string {
 }
 
 type subjectContextKey struct{}
-
-// END: authenticate

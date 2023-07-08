@@ -1,4 +1,3 @@
-// START: intro
 package server
 
 import (
@@ -58,9 +57,6 @@ func TestServer(t *testing.T) {
 	}
 }
 
-// END: intro
-
-// START: setup
 func setupTest(t *testing.T, fn func(*Config)) (
 	rootClient api.LogClient,
 	nobodyClient api.LogClient,
@@ -172,9 +168,6 @@ func setupTest(t *testing.T, fn func(*Config)) (
 	}
 }
 
-// END: setup
-
-// START: produceconsume
 func testProduceConsume(t *testing.T, client, _ api.LogClient, config *Config) {
 	ctx := context.Background()
 
@@ -198,9 +191,6 @@ func testProduceConsume(t *testing.T, client, _ api.LogClient, config *Config) {
 	require.Equal(t, want.Offset, consume.Record.Offset)
 }
 
-// END: produceconsume
-
-// START: consumeerror
 func testConsumePastBoundary(
 	t *testing.T,
 	client, _ api.LogClient,
@@ -228,9 +218,6 @@ func testConsumePastBoundary(
 	}
 }
 
-// END: consumeerror
-
-// START: stream
 func testProduceConsumeStream(
 	t *testing.T,
 	client, _ api.LogClient,
@@ -286,7 +273,6 @@ func testProduceConsumeStream(
 	}
 }
 
-// END: stream
 func testUnauthorized(t *testing.T, _, client api.LogClient, config *Config) {
 	ctx := context.Background()
 	produce, err := client.Produce(ctx, &api.ProduceRequest{
